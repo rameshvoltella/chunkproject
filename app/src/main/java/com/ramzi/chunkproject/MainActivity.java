@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         File f=new File(Environment.getExternalStorageDirectory() +
                 File.separator + "janu", "pra.mp4");
         File splite_dir = new File(Environment.getExternalStorageDirectory() +
-                File.separator + "TollCulator", "pra.mp4.partfile");
+                File.separator + "TollCulatoraa", "pra.mp4.partfile");
         try {
 //            splite(f,1);
             merger(splite_dir);
