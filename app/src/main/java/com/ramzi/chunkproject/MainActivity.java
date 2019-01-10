@@ -1,18 +1,27 @@
 package com.ramzi.chunkproject;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.obsez.android.lib.filechooser.ChooserDialog;
+
+
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.*;
 
 /**
@@ -20,25 +29,23 @@ import java.util.*;
  *
  * @auther Ramesh M Nair
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TaskCallBack {
     private static final String exted = ".cfg";
     private static final String ext_p = ".part";
     private static final String TAG ="per" ;
+    private static final String FILE_SPLIT ="ChunkProject";
+    int values=-1;
+    TextView splitText,mergeText;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG, "Permission is granted");
-                //File write logic here
-            }
-            else
-            {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            }
-        }
+        splitText=(TextView)findViewById(R.id.splittxt);
+        mergeText=(TextView)findViewById(R.id.mergetxt);
+
+        isStoragePermissionGranted();
     }
    /* public static List<File> splitFile(File f) throws IOException {
         int partCounter = 1;
@@ -72,71 +79,9 @@ public class MainActivity extends AppCompatActivity {
         mergingStream.close();
     }*/
 
-    static void splite(File file,int size) throws IOException {
-        if (!file.exists()) {
-            throw new IOException("File not found!");
-        }
-        File splite_dir = new File(Environment.getExternalStorageDirectory() +
-                File.separator + "TollCulator", file.getName()+".partfile");
-        if (!splite_dir.exists())
-            splite_dir.mkdir();
-        System.out.println("Please Wait...");
-        byte buf[] = new byte[size*1024*1024];
-        FileInputStream fis = new FileInputStream(file);
-        FileOutputStream fos = null;
-        File f = null;
-        int count = 0;
-        int len;
-        while ((len = fis.read(buf)) != -1) {
-            f = new File(splite_dir, (count++) + ext_p);
-            fos = new FileOutputStream(f);
-            fos.write(buf, 0, len);
-            fos.close();
-        }
-        Properties prop = new Properties();
-        prop.setProperty("filename", file.getName());
-        prop.setProperty("part_count", count + "");
-        File prop_file = new File(splite_dir.getAbsoluteFile(),file.getName() + ".cfg");
-        fos = new FileOutputStream(prop_file);
-        prop.store(fos, file.getName());
-        fos.close();
-        fis.close();
-        System.out.println("Storage path:" + splite_dir.getAbsoluteFile());
-        System.out.println("splite success!");
-    }
 
-    static void merger(File dir) throws Exception {
-        if (!(dir.exists() && dir.isDirectory()))
-            throw new RuntimeException("Dir not exists or dir not a Directory");
-        File[] files = dir.listFiles(new FilteExted(exted));
-        if (files.length == 0)
-            throw new RuntimeException(exted + "File not found!");
-        Properties prop = new Properties();
-        FileInputStream fis = new FileInputStream(files[0]);
-        prop.load(fis);
-        String filename = prop.getProperty("filename");
-        int filecount = Integer.parseInt(prop.getProperty("part_count"));
-        files = dir.listFiles(new FilteExted(ext_p));
-        if (files.length != filecount)
-            throw new RuntimeException("part file is missing");
-        System.out.println("Please Wait...");
-        ArrayList<FileInputStream> filelist = new ArrayList<FileInputStream>();
-        for (int i = 0; i < filecount; i++) {
-            filelist.add(new FileInputStream(new File(dir, i + ext_p)));
-        }
-        Enumeration<FileInputStream> em = Collections.enumeration(filelist);
-        SequenceInputStream sis = new SequenceInputStream(em);
-        File targ_file = new File(dir, filename);
-        FileOutputStream fos = new FileOutputStream(targ_file);
-        byte buf[] = new byte[1024];
-        int len = 0;
-        while ((len = sis.read(buf)) != -1) {
-            fos.write(buf);
-        }
-        fos.close();
-        sis.close();
-        System.out.println("merger succes!");
-    }
+
+
 
 
     public  boolean isStoragePermissionGranted() {
@@ -144,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
                 Log.v(TAG,"Permission is granted");
+                makeTheDir();
                 return true;
             } else {
 
@@ -154,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else { //permission is automatically granted on sdk<23 upon installation
             Log.v(TAG,"Permission is granted");
+            makeTheDir();
             return true;
         }
     }
@@ -163,37 +110,157 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
             Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
+            makeTheDir();
             //resume tasks needing this permission
+        }
+        else
+        {
+            finish();
+        }
+
+    }
+
+
+
+    public void makeTheDir()
+    {
+        File spliteFolder = new File(Environment.getExternalStorageDirectory() +
+                File.separator + FILE_SPLIT);
+        if(!spliteFolder.exists())
+        {
+            spliteFolder.mkdirs();
         }
     }
 
     public void split(View view) {
-        File f=new File(Environment.getExternalStorageDirectory() +
-                File.separator + "janu", "pra.mp4");
-        File splite_dir = new File(Environment.getExternalStorageDirectory() +
-                File.separator + "TollCulator", "pra.mp4.partfile");
-        try {
-//            splite(f,1);
-            merger(splite_dir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        File f=new File(splitText.getText().toString());
+        if(f.exists()) {
+            showProgressDialog("splitting wait.....");
+
+            new SplirMergeTask(0, this, f).execute();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"select files dude",1).show();
+        }
+
+    }
+
+    public void merge(View view) {
+
+        File f=new File(mergeText.getText().toString());
+        if(f.exists()) {
+            showProgressDialog("Merging wait.....");
+
+            new SplirMergeTask(1, this, f).execute();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"select files dude",1).show();
+
+        }
+
+    }
+
+    public void selectSplite(View view) {
+        selectFile(0);
+    }
+
+    public void selectMerge(View view) {
+        selectFile(1);
+    }
+
+
+    public void selectFile(final int value)
+    {
+//        if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                == PackageManager.PERMISSION_GRANTED) {
+            this.values = value;
+        if (values == 0) {
+            new ChooserDialog().with(this)
+                    .withStartFile(Environment.getExternalStorageDirectory().toString())
+                    .withChosenListener(new ChooserDialog.Result() {
+                        @Override
+                        public void onChoosePath(String path, File pathFile) {
+                            splitText.setText("" + path);
+
+                            Toast.makeText(MainActivity.this, "FILE: " + path, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .build()
+                    .show();
+        }
+        else
+        {
+            new ChooserDialog().with(this)
+                    .withFilter(true, false)
+                    .withStartFile(Environment.getExternalStorageDirectory() +
+                            File.separator + FILE_SPLIT)
+                    .withChosenListener(new ChooserDialog.Result() {
+                        @Override
+                        public void onChoosePath(String path, File pathFile) {
+                            mergeText.setText(path);
+//                            Toast.makeText(MainActivity.this, "FOLDER: " + path, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .build()
+                    .show();
+        }
+//        }
+    }
+
+
+    @Override
+    public void taskCallback(boolean isComplete, int type) {
+        hideProgressDialog();
+
+        if(isComplete)
+        {
+            if(type==0)
+            {
+                Toast.makeText(getApplicationContext(),"Successfully splitted",1).show();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(),"Successfully merged",1).show();
+
+            }
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Operation failed",1).show();
+
+        }
+    }
+
+
+
+    protected ProgressDialog progressDialog;
+
+
+    protected void showProgressDialog(String message) {
+
+
+        if (progressDialog == null || !progressDialog.isShowing()) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage(message);
+            progressDialog.setCanceledOnTouchOutside(false);
+            if (!isFinishing()) {
+                progressDialog.show();
+            }
+        }
+    }
+
+    protected void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            if (!isFinishing()) {
+                progressDialog.dismiss();
+            }
         }
     }
 }
 
 
-    class FilteExted implements FileFilter {
-        String ext;
 
-        public FilteExted(String ext) {
-            this.ext = ext;
-        }
-
-        @Override
-        public boolean accept(File dir) {
-            return dir.getName().endsWith(ext);
-        }
-    }
 

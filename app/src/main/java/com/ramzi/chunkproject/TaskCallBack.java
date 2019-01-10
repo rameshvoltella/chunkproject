@@ -6,4 +6,6 @@ package com.ramzi.chunkproject;
  * @auther Ramesh M Nair
  */
 public interface TaskCallBack {
+
+    void taskCallback(boolean isComplete,int type);
 }

@@ -6,15 +6,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                  android:orientation="vertical">
+        <Button android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Select file to merge"
+                android:onClick="selectMerge"/>
 
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Split"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:onClick="split"
-            app:layout_constraintTop_toTopOf="parent"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:id="@+id/mergetxt"
+                  android:text=""/>
+
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Merge"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:onClick="merge"
+                app:layout_constraintTop_toTopOf="parent"/>
+        <Button android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Select file to splite"
+                android:onClick="selectSplite"/>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:id="@+id/splittxt"
+                  android:text=""/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Split"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:onClick="split"
+                app:layout_constraintTop_toTopOf="parent"/>
+    </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
