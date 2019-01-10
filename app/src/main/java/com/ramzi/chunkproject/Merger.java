@@ -1,5 +1,7 @@
 package com.ramzi.chunkproject;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,6 +37,7 @@ public class Merger {
         System.out.println("Please Wait...");
         ArrayList<FileInputStream> filelist = new ArrayList<FileInputStream>();
         for (int i = 0; i < filecount; i++) {
+//            Log.d(">>>>",i)
             filelist.add(new FileInputStream(new File(dir, i + ext_p)));
         }
         Enumeration<FileInputStream> em = Collections.enumeration(filelist);
