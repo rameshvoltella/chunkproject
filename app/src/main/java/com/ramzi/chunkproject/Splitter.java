@@ -38,6 +38,7 @@ public class Splitter {
             fos = new FileOutputStream(f);
             fos.write(buf, 0, len);
             fos.close();
+            CryptoAES.Encrypt(f.getAbsolutePath(),"1!asertg7*a".toCharArray());
         }
         Properties prop = new Properties();
         prop.setProperty("filename", file.getName());
@@ -49,5 +50,16 @@ public class Splitter {
         fis.close();
         System.out.println("Storage path:" + splite_dir.getAbsoluteFile());
         System.out.println("splite success!");
+        try {
+            for (File f2 : splite_dir.listFiles()) {
+                if (f2.getName().endsWith(".part")) {
+                    f2.delete(); // may fail mysteriously - returns boolean you may want to check
+                }
+            }
+        }
+        catch (Exception e)
+        {
+
+        }
     }
 }

@@ -31,13 +31,14 @@ public class Merger {
         prop.load(fis);
         String filename = prop.getProperty("filename");
         int filecount = Integer.parseInt(prop.getProperty("part_count"));
-        files = dir.listFiles(new FilteExted(ext_p));
+        files = dir.listFiles(new FilteExted(ext_p+".enc"));
         if (files.length != filecount)
             throw new RuntimeException("part file is missing");
         System.out.println("Please Wait...");
         ArrayList<FileInputStream> filelist = new ArrayList<FileInputStream>();
         for (int i = 0; i < filecount; i++) {
 //            Log.d(">>>>",i)
+            CryptoAES.Decrypt(new File(dir, i + ext_p+".enc").getAbsolutePath(),"1!asertg7*a".toCharArray());
             filelist.add(new FileInputStream(new File(dir, i + ext_p)));
         }
         Enumeration<FileInputStream> em = Collections.enumeration(filelist);
@@ -52,5 +53,19 @@ public class Merger {
         fos.close();
         sis.close();
         System.out.println("merger succes!");
+
+try {
+    for (File f : dir.listFiles()) {
+        if (f.getName().endsWith(".enc")||f.getName().endsWith(".part")) {
+            f.delete(); // may fail mysteriously - returns boolean you may want to check
+        }
+    }
+}
+catch (Exception e)
+{
+
+}
+
+
     }
 }
