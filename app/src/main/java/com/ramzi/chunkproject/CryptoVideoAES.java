@@ -17,11 +17,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.util.Arrays;
 
-public class CryptoAES {
+public class CryptoVideoAES {
 
-    private static int IV_LENGTH = 12;
+    private static int IV_LENGTH = 16;
     private static int SALT_LENGTH = 64;
 
     private static int PBKDF2_ITERATIONS = 50000;

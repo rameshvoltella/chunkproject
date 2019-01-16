@@ -1,17 +1,16 @@
-package com.test.exoplayer2;
+package com.ramzi.chunkproject;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 
 /**
  * Created by michaeldunn on 3/13/17.

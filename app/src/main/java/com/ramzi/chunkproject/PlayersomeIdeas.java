@@ -1,4 +1,4 @@
-package com.test.exoplayer2;
+package com.ramzi.chunkproject;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -23,17 +22,16 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 
-import java.io.File;
-import java.security.SecureRandom;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
+import java.security.SecureRandom;
 
-public class MainActivity extends AppCompatActivity {
+public class PlayersomeIdeas extends AppCompatActivity {
 
   public static final String AES_ALGORITHM = "AES";
   public static final String AES_TRANSFORMATION = "AES/CTR/NoPadding";
@@ -118,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
       // the ciphers, key and iv used in this demo, or to see it from top to bottom,
       // supply a url to a remote unencrypted file - this method will download and encrypt it
       // this first argument needs to be that url, not null or empty...
-      new DownloadAndEncryptFileTask("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4", mEncryptedFile, encryptionCipher).execute();
+//      new DownloadAndEncryptFileTask("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4", mEncryptedFile, encryptionCipher).execute();
     } catch (Exception e) {
       e.printStackTrace();
     }
