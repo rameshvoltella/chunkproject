@@ -20,6 +20,13 @@
             android:text="Play Video"
             android:onClick="playVideo" />
 
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Splite Video"
+            android:onClick="Split" />
+
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
             android:id="@+id/simpleexoplayerview"
             android:layout_width="320dp"

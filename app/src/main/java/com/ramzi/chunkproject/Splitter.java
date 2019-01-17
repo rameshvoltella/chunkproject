@@ -1,6 +1,7 @@
 package com.ramzi.chunkproject;
 
 import android.os.Environment;
+import com.ramzi.chunkproject.correct.CipherEncryption;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +39,8 @@ public class Splitter {
             fos = new FileOutputStream(f);
             fos.write(buf, 0, len);
             fos.close();
-            CryptoAES.Encrypt(f.getAbsolutePath(),"1!asertg7*a".toCharArray());
+            CipherEncryption.Encrypt(f.getAbsolutePath());
+//            CryptoAES.Encrypt(f.getAbsolutePath(),"1!asertg7*a".toCharArray());
         }
         Properties prop = new Properties();
         prop.setProperty("filename", file.getName());

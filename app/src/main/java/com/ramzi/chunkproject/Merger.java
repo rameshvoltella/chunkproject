@@ -39,7 +39,7 @@ public class Merger {
         for (int i = 0; i < filecount; i++) {
 //            Log.d(">>>>",i)
             CryptoAES.Decrypt(new File(dir, i + ext_p+".enc").getAbsolutePath(),"1!asertg7*a".toCharArray());
-            filelist.add(new FileInputStream(new File(dir, i + ext_p)));
+            filelist.add(new FileInputStream(new File(dir, i + ext_p+".enc")));
         }
         Enumeration<FileInputStream> em = Collections.enumeration(filelist);
         SequenceInputStream sis = new SequenceInputStream(em);

@@ -12,8 +12,10 @@ import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
@@ -21,9 +23,9 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.ramzi.chunkproject.DownloadAndEncryptFileTask;
-import com.ramzi.chunkproject.EncryptedFileDataSourceFactory;
-import com.ramzi.chunkproject.R;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+import com.ramzi.chunkproject.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
@@ -38,18 +40,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.security.SecureRandom;
 
-public class PlayerCorrectRefrence extends AppCompatActivity {
+public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCallBack{
 
     public static final String AES_ALGORITHM = "AES";
     public static final String AES_TRANSFORMATION = "AES/CTR/NoPadding";
 
-    private static final String ENCRYPTED_FILE_NAME = "su.mp4.enc";
+    private static final String ENCRYPTED_FILE_NAME = "0.part.enc";
+    private static final String ENCRYPTED_FILE_NAME2 = "1.part.enc";
+
 
     private Cipher mCipher;
     private SecretKeySpec mSecretKeySpec;
     private IvParameterSpec mIvParameterSpec;
 
     private File mEncryptedFile;
+    private File mEncryptedFile2;
 
     private SimpleExoPlayerView mSimpleExoPlayerView;
     private static int PBKDF2_ITERATIONS = 50000;
@@ -62,11 +67,12 @@ public class PlayerCorrectRefrence extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.player_main);
 
         mSimpleExoPlayerView = (SimpleExoPlayerView) findViewById(R.id.simpleexoplayerview);
 
         mEncryptedFile = new File(Environment.getExternalStorageDirectory(), ENCRYPTED_FILE_NAME);
+        mEncryptedFile2 = new File(Environment.getExternalStorageDirectory(), ENCRYPTED_FILE_NAME2);
         Log.d("URlllll", mEncryptedFile.getAbsolutePath() + ">>>>");
 
         SecureRandom secureRandom = new SecureRandom();
@@ -146,8 +152,21 @@ public class PlayerCorrectRefrence extends AppCompatActivity {
         try {
             Log.d("Playing location", "Data" + mEncryptedFile.getAbsolutePath());
             Uri uri = Uri.fromFile(mEncryptedFile);
+            Uri uri2 = Uri.fromFile(mEncryptedFile2);
+//            DefaultBandwidthMeter  defaultBandwidthMeter = new DefaultBandwidthMeter();
+//
+//            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(this,
+//                    Util.getUserAgent(this, "mediaPlayerSample"),defaultBandwidthMeter);
             MediaSource videoSource = new ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory, null, null);
-            player.prepare(videoSource);
+            MediaSource videoSource2 = new ExtractorMediaSource(uri2, dataSourceFactory, extractorsFactory, null, null);
+//            player.prepare(videoSource);
+
+//            player.prepare(new MergingMediaSource(videoSource,videoSource2));
+            MediaSource[] mediaSourcesToLoad = new MediaSource[2];
+            mediaSourcesToLoad[0] = videoSource;
+            mediaSourcesToLoad[1] = videoSource2;
+            ConcatenatingMediaSource mediaSourcess = new ConcatenatingMediaSource(mediaSourcesToLoad);
+            player.prepare(mediaSourcess);
             player.setPlayWhenReady(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -211,5 +230,16 @@ public class PlayerCorrectRefrence extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void Split(View view) {
+//        new SplirMergeTask(0, this, new File(Environment.getExternalStorageDirectory(), "palu.mp4")).execute();
+        new SplirMergeTask(1, this, new File(Environment.getExternalStorageDirectory(), "palu.mp4")).execute();
+
+    }
+
+    @Override
+    public void taskCallback(boolean isComplete, int type) {
+
     }
 }
