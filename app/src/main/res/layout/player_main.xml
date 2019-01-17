@@ -34,4 +34,11 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             app:use_controller="false"/>
 
+    <android.support.v7.widget.AppCompatSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:id="@+id/seek"/>
+
 </LinearLayout>

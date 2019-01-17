@@ -4,28 +4,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.util.Log;
 import android.view.View;
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
-import com.google.android.exoplayer2.SimpleExoPlayer;
+import android.widget.SeekBar;
+import com.google.android.exoplayer2.*;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.MergingMediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.source.*;
+import com.google.android.exoplayer2.trackselection.*;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.ramzi.chunkproject.*;
+import com.ramzi.chunkproject.R;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
@@ -39,14 +33,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.security.SecureRandom;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCallBack{
 
     public static final String AES_ALGORITHM = "AES";
     public static final String AES_TRANSFORMATION = "AES/CTR/NoPadding";
 
-    private static final String ENCRYPTED_FILE_NAME = "0.part.enc";
-    private static final String ENCRYPTED_FILE_NAME2 = "1.part.enc";
+    private static final String ENCRYPTED_FILE_NAME = "manu1.mkv.enc";
+    private static final String ENCRYPTED_FILE_NAME2 = "manu2.mkv.enc";
 
 
     private Cipher mCipher;
@@ -61,7 +57,9 @@ public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCall
     private static int KEY_LENGTH = 256;
     private static int SALT_LENGTH = 64;
     private static int IV_LENGTH = 16;
-
+    AppCompatSeekBar seekBar;
+    SimpleExoPlayer player;
+    long realDurationMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +72,10 @@ public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCall
         mEncryptedFile = new File(Environment.getExternalStorageDirectory(), ENCRYPTED_FILE_NAME);
         mEncryptedFile2 = new File(Environment.getExternalStorageDirectory(), ENCRYPTED_FILE_NAME2);
         Log.d("URlllll", mEncryptedFile.getAbsolutePath() + ">>>>");
+        seekBar=(AppCompatSeekBar)findViewById(R.id.seek);
+        seekBar.setOnClickListener(view -> {
 
+        });
         SecureRandom secureRandom = new SecureRandom();
 //    byte[] key = new byte[16];
 //    byte[] iv = new byte[16];
@@ -97,8 +98,59 @@ public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCall
             e.printStackTrace();
         }
 
-//        decode();
 
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+//               float number= (totalTime*i) / 100;
+//               Log.d("totola no",number+">>"+i);
+//                if (serviceToken != null && serviceToken.getSeek(i) != -1) {
+//                    getSeek(i);
+//                    if (seekValue >= 0) {
+//
+//                        currentTimeTV.setText(String.format(Locale.getDefault(), "%02d:%02d",
+//                                TimeUnit.MILLISECONDS.toMinutes(seekValue), // The change is in this line
+//                                TimeUnit.MILLISECONDS.toSeconds(seekValue) -
+//                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(seekValue))));
+//                    }
+//                }
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+                       seek(seekBar.getProgress());
+
+            }
+        });
+
+//        decode();
+//        mSimpleExoPlayerView.addListener(new ExoPlayer.Listener() {
+//            @Override
+//            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+//                if (playbackState == ExoPlayer.STATE_READY && !durationSet) {
+//                    long realDurationMillis = audioPlayer.getDuration();
+//                    durationSet = true;
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onPlayWhenReadyCommitted() {
+//                // No op.
+//            }
+//
+//            @Override
+//            public void onPlayerError(ExoPlaybackException error) {
+//                // No op.
+//            }
+//        });
 
     }
 
@@ -132,7 +184,8 @@ public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCall
             // the ciphers, key and iv used in this demo, or to see it from top to bottom,
             // supply a url to a remote unencrypted file - this method will download and encrypt it
             // this first argument needs to be that url, not null or empty...
-            new DownloadAndEncryptFileTask("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4", mEncryptedFile, encryptionCipher).execute();
+
+//            new DownloadAndEncryptFileTask("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4", mEncryptedFile, encryptionCipher).execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -145,7 +198,7 @@ public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCall
 //    TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
         TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
         LoadControl loadControl = new DefaultLoadControl();
-        SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
+         player = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
         mSimpleExoPlayerView.setPlayer(player);
         DataSource.Factory dataSourceFactory = new EncryptedFileDataSourceFactory(mCipher, mSecretKeySpec, mIvParameterSpec, bandwidthMeter);
         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
@@ -168,6 +221,38 @@ public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCall
             ConcatenatingMediaSource mediaSourcess = new ConcatenatingMediaSource(mediaSourcesToLoad);
             player.prepare(mediaSourcess);
             player.setPlayWhenReady(true);
+            player.addListener(new ExoPlayer.EventListener() {
+                @Override
+                public void onTimelineChanged(Timeline timeline, Object manifest) {
+
+                }
+
+                @Override
+                public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+                }
+
+                @Override
+                public void onLoadingChanged(boolean isLoading) {
+
+                }
+
+                @Override
+                public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                     realDurationMillis = player.getDuration();
+                    Log.d("Playerduration",realDurationMillis+">>");
+                }
+
+                @Override
+                public void onPlayerError(ExoPlaybackException error) {
+
+                }
+
+                @Override
+                public void onPositionDiscontinuity() {
+
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -241,5 +326,13 @@ public class PlayerCorrectRefrence extends AppCompatActivity implements TaskCall
     @Override
     public void taskCallback(boolean isComplete, int type) {
 
+    }
+
+    public void seek(int seekPosition) {
+        if (player != null) {
+            long lastSeekPosition = (realDurationMillis * seekPosition) / 100;
+            Log.d("hahahaha",">>"+lastSeekPosition);
+            player.seekTo(lastSeekPosition);
+        }
     }
 }

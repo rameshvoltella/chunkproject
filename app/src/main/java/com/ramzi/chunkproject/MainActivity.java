@@ -18,7 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-
+import com.ramzi.chunkproject.correct.CipherEncryption;
 
 
 import java.io.*;
@@ -136,9 +136,9 @@ public class MainActivity extends AppCompatActivity implements TaskCallBack {
 
         File f=new File(splitText.getText().toString());
         if(f.exists()) {
-            showProgressDialog("splitting wait.....");
-
-            new SplirMergeTask(0, this, f).execute();
+//            showProgressDialog("splitting wait.....");
+            CipherEncryption.Encrypt(splitText.getText().toString());
+//            new SplirMergeTask(0, this, f).execute();
         }
         else
         {

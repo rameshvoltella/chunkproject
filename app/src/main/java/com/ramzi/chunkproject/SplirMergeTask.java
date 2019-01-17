@@ -26,8 +26,8 @@ public class SplirMergeTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... voids) {
         if (task == 0) {
             try {
-               Splitter.splite(f,10);
-            } catch (IOException e) {
+               Splitter.splite(f,50);
+            } catch (Exception e) {
                 e.printStackTrace();
                 isSuccess=false;
             }

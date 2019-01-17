@@ -3,10 +3,7 @@ package com.ramzi.chunkproject;
 import android.os.Environment;
 import com.ramzi.chunkproject.correct.CipherEncryption;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -62,6 +59,60 @@ public class Splitter {
         catch (Exception e)
         {
 
+        }
+    }
+
+    public static void splitTwo(File file)
+    {
+        try {
+//            File file = new File("C:/Documents/Despicable Me 2 - Trailer (HD) - YouTube.mp4");//File read from Source folder to Split.
+            if (file.exists()) {
+
+                String videoFileName = file.getName().substring(0, file.getName().lastIndexOf(".")); // Name of the videoFile without extension
+                File splitFile = new File(Environment.getExternalStorageDirectory() +
+                        File.separator + FILE_SPLIT+File.separator+"olakka"+File.separator+ videoFileName);//Destination folder to save.
+                if (!splitFile.exists()) {
+                    splitFile.mkdirs();
+                    System.out.println("Directory Created -> "+ splitFile.getAbsolutePath());
+                }
+
+                int i = 01;// Files count starts from 1
+                InputStream inputStream = new FileInputStream(file);
+                String videoFile = splitFile.getAbsolutePath() +"/"+ String.format("%02d", i) +"_"+ file.getName();// Location to save the files which are Split from the original file.
+                OutputStream outputStream = new FileOutputStream(videoFile);
+                System.out.println("File Created Location: "+ videoFile);
+                int totalPartsToSplit = 20;// Total files to split.
+                int splitSize = inputStream.available() / totalPartsToSplit;
+                int streamSize = 0;
+                int read = 0;
+                while ((read = inputStream.read()) != -1) {
+
+                    if (splitSize == streamSize) {
+                        if (i != totalPartsToSplit) {
+                            i++;
+                            String fileCount = String.format("%02d", i); // output will be 1 is 01, 2 is 02
+                            videoFile = splitFile.getAbsolutePath() +"/"+ fileCount +"_"+ file.getName();
+                            outputStream = new FileOutputStream(videoFile);
+                            System.out.println("File Created Location: "+ videoFile);
+                            streamSize = 0;
+                        }
+                    }
+                    outputStream.write(read);
+                    streamSize++;
+                }
+                ///storage/emulated/0/mama.mp4
+//                ffmpeg -i INPUT.mp4 -acodec copy -f segment -vcodec copy -reset_timestamps 1 -map 0 OUTPUT%d.mp4
+//                ffmpeg -i ORIGINALFILE.mp4 -acodec copy -vcodec copy -ss 0 -t 00:15:00 OUTFILE-1.mp4
+//                ffmpeg -i ORIGINALFILE.mp4 -acodec copy -vcodec copy -ss 00:15:00 -t 00:15:00 OUTFILE-2.mp4
+//                ffmpeg -i ORIGINALFILE.mp4 -acodec copy -vcodec copy -ss 00:30:00 -t 00:15:00 OUTFILE-3.mp4
+                inputStream.close();
+                outputStream.close();
+                System.out.println("Total files Split ->"+ totalPartsToSplit);
+            } else {
+                System.err.println(file.getAbsolutePath() +" File Not Found.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

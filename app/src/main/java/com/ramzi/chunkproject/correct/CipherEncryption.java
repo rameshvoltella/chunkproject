@@ -73,6 +73,7 @@ public class CipherEncryption {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.d("Done","dunno>>>");
     }
 
 
