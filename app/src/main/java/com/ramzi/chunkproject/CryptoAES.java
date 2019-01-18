@@ -70,7 +70,7 @@ public class CryptoAES {
 
                 actualSize += c;
                 progress = (int)(actualSize * 100.0 / fileSize + 0.5);
-                System.out.print("Progress: " + actualSize + " / " + fileSize + " - " + progress + "%\r");
+                System.out.print("Progrolakkaess: " + actualSize + " / " + fileSize + " - " + progress + "%\r");
             }
             cipherOutputStream.close();
             plainFile.close();
